@@ -13,7 +13,7 @@ JIVAS action wrapper around the LangChain library for abstracted LLM interfacing
 - **Name:** `jivas/langchain_model_action`
 - **Author:** [V75 Inc.](https://v75inc.com/)
 - **Architype:** `LangChainModelAction`
-- **Version:** `0.0.1`
+- **Version:** `0.0.2`
 
 ## Meta Information
 
@@ -29,7 +29,7 @@ JIVAS action wrapper around the LangChain library for abstracted LLM interfacing
 
 - **Jivas:** `^2.0.0`
 - **Pip:**
-  - `openai`: `1.51.0`
+  - `openai`: `1.68.2`
   - `langchain`: `0.3.21`
   - `langchain-community`: `0.3.20`
   - `langchain-core`: `0.3.47`

@@ -18,7 +18,7 @@ node LangChainModelAction :ModelAction: {
     has api_base: str = "";
     has api_version: str = "";
     has model_name:str = "gpt-4o";
-    has model_temperature:float = 0.7;
+    has model_temperature:float = 0.4;
     has model_max_tokens:int = 2048;
 
     can invoke(
@@ -35,9 +35,9 @@ node LangChainModelAction :ModelAction: {
 
         op = kwargs.get('op', "chatopenai");
         functions = kwargs.get('functions', []);
-        temperature = kwargs.get('temperature', self.model_temperature);
+        temperature = kwargs.get('model_temperature', self.model_temperature);
         model_name = kwargs.get('model_name', self.model_name);
-        max_tokens = kwargs.get('max_tokens', self.model_max_tokens);
+        max_tokens = kwargs.get('model_max_tokens', self.model_max_tokens);
 
         if op == 'chatopenai' {
             llm = ChatOpenAI(
@@ -94,13 +94,22 @@ node LangChainModelAction :ModelAction: {
     }
 
     can healthcheck() -> bool {
+
+        test_prompt_messages = [{"system" : "Output the result of 2 + 2"}];
+        test_kwargs = {
+            "model_name": self.model_name,
+            "model_temperature": self.model_temperature,
+            "model_max_tokens": self.model_max_tokens
+        };
+
         try {
-            if(
-               self.api_key and
-               self.model_name and
-               self.model_max_tokens > 0
-            ) {
-                return True;
+            if( model_action_result := self.call_model(prompt_messages = test_prompt_messages, prompt_variables = {}, kwargs = test_kwargs)) {               # set the interaction message+
+                interaction_message = model_action_result.get_result();
+                if not interaction_message {
+                    return False;
+                } else {
+                    return True;
+                }
             }
             return False;
         } except Exception as e {

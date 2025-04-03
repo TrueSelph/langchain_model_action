@@ -6,3 +6,6 @@
 
 ## 0.0.3
 - Relax version constraints and bump patch version for langchain_model_action.
+
+## 0.0.4
+- Patched mismapped params controlling model_temperature and model_max_tokens; updated helathcheck implementation to test model response

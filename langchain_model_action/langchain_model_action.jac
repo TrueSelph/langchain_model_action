@@ -18,7 +18,7 @@ node LangChainModelAction :ModelAction: {
     has api_base: str = "";
     has api_version: str = "";
     has model_name:str = "gpt-4o";
-    has model_temperature:float = 0.7;
+    has model_temperature:float = 0.4;
     has model_max_tokens:int = 2048;
 
     can invoke(
@@ -35,9 +35,9 @@ node LangChainModelAction :ModelAction: {
 
         op = kwargs.get('op', "chatopenai");
         functions = kwargs.get('functions', []);
-        temperature = kwargs.get('temperature', self.model_temperature);
+        temperature = kwargs.get('model_temperature', self.model_temperature);
         model_name = kwargs.get('model_name', self.model_name);
-        max_tokens = kwargs.get('max_tokens', self.model_max_tokens);
+        max_tokens = kwargs.get('model_max_tokens', self.model_max_tokens);
 
         if op == 'chatopenai' {
             llm = ChatOpenAI(

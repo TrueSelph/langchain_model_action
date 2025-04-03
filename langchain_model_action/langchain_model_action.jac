@@ -94,13 +94,22 @@ node LangChainModelAction :ModelAction: {
     }
 
     can healthcheck() -> bool {
+
+        test_prompt_messages = [{"system" : "Output the result of 2 + 2"}];
+        test_kwargs = {
+            "model_name": self.model_name,
+            "model_temperature": self.model_temperature,
+            "model_max_tokens": self.model_max_tokens
+        };
+
         try {
-            if(
-               self.api_key and
-               self.model_name and
-               self.model_max_tokens > 0
-            ) {
-                return True;
+            if( model_action_result := self.call_model(prompt_messages = test_prompt_messages, prompt_variables = {}, kwargs = test_kwargs)) {               # set the interaction message+
+                interaction_message = model_action_result.get_result();
+                if not interaction_message {
+                    return False;
+                } else {
+                    return True;
+                }
             }
             return False;
         } except Exception as e {

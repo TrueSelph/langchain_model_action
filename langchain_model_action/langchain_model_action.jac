@@ -1,5 +1,6 @@
 import:py logging;
 import:py traceback;
+import:py from typing { Union }
 import:py from logging { Logger }
 import:py from langchain_core.prompts { ChatPromptTemplate }
 import:py from langchain_openai { ChatOpenAI, AzureChatOpenAI }
@@ -93,7 +94,15 @@ node LangChainModelAction :ModelAction: {
         return None;
     }
 
-    can healthcheck() -> bool {
+    can healthcheck() -> Union[bool, dict] {
+
+        if not self.api_key {
+            return {
+                "status": False,
+                "message": "API key not set.",
+                "severity": "error"
+            };
+        }
 
         test_prompt_messages = [{"system" : "Output the result of 2 + 2"}];
         test_kwargs = {
@@ -106,15 +115,27 @@ node LangChainModelAction :ModelAction: {
             if( model_action_result := self.call_model(prompt_messages = test_prompt_messages, prompt_variables = {}, kwargs = test_kwargs)) {               # set the interaction message+
                 interaction_message = model_action_result.get_result();
                 if not interaction_message {
-                    return False;
+                    return {
+                        "status": False,
+                        "message": "No valid result from LLM call. Check API key and model configuration.",
+                        "severity": "error"
+                    };
                 } else {
                     return True;
                 }
             }
-            return False;
+            return {
+                "status": False,
+                "message": "Unable to excute LLM call. Check API key and model configuration.",
+                "severity": "error"
+            };
         } except Exception as e {
             self.logger.error(f"An exception occurred in {self.label}:\n{traceback.format_exc()}\n");
-            return False;
+            return {
+                "status": False,
+                "message": f"There is an issue with the action. {e}",
+                "severity": "error"
+            };
         }
     }
 

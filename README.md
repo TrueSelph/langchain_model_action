@@ -6,7 +6,7 @@
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/TrueSelph/langchain_model_action)
 ![GitHub](https://img.shields.io/github/license/TrueSelph/langchain_model_action)
 
-JIVAS action wrapper around the LangChain library for abstracted LLM interfacing.
+This action provides a JIVAS action wrapper for the LangChain library to invoke LLM calls, facilitating abstracted interfacing with large language models (LLM). As a core action, it simplifies and streamlines interactions with LLMs. The package is a singleton and requires the Jivas library version 2.0.0. It also depends on various Python packages for its functionality, including `openai` and different components of the LangChain ecosystem.
 
 ## Package Information
 
@@ -28,14 +28,12 @@ JIVAS action wrapper around the LangChain library for abstracted LLM interfacing
 
 - **Jivas:** `^2.0.0`
 - **Pip:**
-  - `openai`: `1.51.0`
-  - `langchain`: `0.3.21`
-  - `langchain-community`: `0.3.20`
-  - `langchain-core`: `0.3.47`
-  - `langchain-experimental`: `0.3.4`
-  - `langchain-openai`: `0.3.9`
-
-This package, developed by V75 Inc., provides a JIVAS action wrapper for the LangChain library, facilitating abstracted interfacing with large language models (LLM). As a core action, it simplifies and streamlines interactions with LLMs. The package is a singleton and requires the Jivas library version 2.0.0. It also depends on various Python packages for its functionality, including `openai` and different components of the LangChain ecosystem.
+  - `openai`: `>=1.68.2`
+  - `langchain`: `>=0.3.21`
+  - `langchain-community`: `>=0.3.20`
+  - `langchain-core`: `>=0.3.47`
+  - `langchain-experimental`: `>=0.3.4`
+  - `langchain-openai`: `>=0.3.9`
 
 ---
 

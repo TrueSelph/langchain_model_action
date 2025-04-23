@@ -11,4 +11,4 @@
 - Patched mismapped params controlling model_temperature and model_max_tokens; updated helathcheck implementation to test model response
 
 ## 0.0.5
-- Added null api key check to helthcheck prior to llm call check
+- Added null api key check to healthcheck prior to llm call check

@@ -12,3 +12,6 @@
 
 ## 0.0.5
 - Added null api key check to healthcheck prior to llm call check
+
+## 0.0.6
+- Updated Azureopenai implementation

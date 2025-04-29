@@ -15,12 +15,13 @@ node LangChainModelAction :ModelAction: {
     # set up logger
     static has logger:Logger = logging.getLogger(__name__);
 
+    has provider:str = "chatopenai"; # azurechatopenai
     has api_key:str = "";
-    has api_base: str = "";
     has api_version: str = "";
+    has azure_endpoint: str = "";
     has model_name:str = "gpt-4o";
     has model_temperature:float = 0.4;
-    has model_max_tokens:int = 2048;
+    has model_max_tokens:int = 4096;
 
     can invoke(
         prompt_messages:list,
@@ -30,11 +31,16 @@ node LangChainModelAction :ModelAction: {
 
         llm = None;
 
+        if not self.api_key {
+            self.logger.error("LangchainModelAction: API key not set.");
+            return None;
+        }
+
         # we'll need to convert the prompt_messages dict to an array of tuples
         prompt_tuples = [(role, message) for item in prompt_messages for (role, message) in item.items()];
         template = ChatPromptTemplate.from_messages(prompt_tuples);
 
-        op = kwargs.get('op', "chatopenai");
+        op = kwargs.get('op', self.provider) or "chatopenai";
         functions = kwargs.get('functions', []);
         temperature = kwargs.get('model_temperature', self.model_temperature);
         model_name = kwargs.get('model_name', self.model_name);
@@ -48,12 +54,23 @@ node LangChainModelAction :ModelAction: {
                 max_tokens = max_tokens
             );
 
-        } elif op == 'azurchatopenai' {
+        } elif op == 'azurechatopenai' {
+
+            if not self.azure_endpoint {
+                self.logger.error("LangchainModelAction: Azure endpoint not set.");
+                return None;
+            }
+
+            if not self.api_version {
+                self.logger.error("LangchainModelAction: Azure API version not set.");
+                return None;
+            }
+
             llm = AzureChatOpenAI(
                 temperature = temperature,
                 openai_api_version=self.api_version,
                 openai_api_key=self.api_key,
-                openai_api_base=self.api_base,
+                azure_endpoint=self.azure_endpoint,
                 deployment_name=model_name,
                 max_tokens = max_tokens
             );

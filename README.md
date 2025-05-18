@@ -6,7 +6,9 @@
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/TrueSelph/langchain_model_action)
 ![GitHub](https://img.shields.io/github/license/TrueSelph/langchain_model_action)
 
-This action provides a JIVAS action wrapper for the LangChain library to invoke LLM calls, facilitating abstracted interfacing with large language models (LLM). As a core action, it simplifies and streamlines interactions with LLMs. The package is a singleton and requires the Jivas library version 2.0.0. It also depends on various Python packages for its functionality, including `openai` and different components of the LangChain ecosystem.
+This action provides a JIVAS action wrapper for the LangChain library to invoke LLM calls, facilitating abstracted interfacing with large language models (LLMs). As a core action, it simplifies and streamlines interactions with LLMs. The package is a singleton and requires the Jivas library version 2.0.0. It also depends on various Python packages for its functionality, including `openai` and different components of the LangChain ecosystem.
+
+Additionally, this action supports streaming responses when the `streaming` flag is set in the interact configuration, enabling real-time output from the underlying LLM.
 
 ## Package Information
 
@@ -26,7 +28,7 @@ This action provides a JIVAS action wrapper for the LangChain library to invoke 
 
 ## Dependencies
 
-- **Jivas:** `^2.0.0`
+- **Jivas:** `^2.0.0-alpha.43`
 - **Pip:**
   - `openai`: `>=1.68.2`
   - `langchain`: `>=0.3.21`
@@ -53,37 +55,56 @@ The LangChain Model Action provides an abstraction layer for interacting with la
 
 ### Configuration Structure
 
-The configuration consists of the following components:
+The configuration consists of the following properties:
 
-### `model_settings`
+#### `provider` (str)
+Specifies the LLM provider. Supported values: `"chatopenai"` (default) or `"azurechatopenai"`.
 
-Defines the settings for the LLM model, such as provider, API keys, and parameters.
+#### `api_key` (str)
+API key for authenticating with the provider.
 
-```python
-model_settings = {
-    "provider": "openai",       # Example: "openai", "huggingface"
-    "api_key": "your_api_key",  # API key for the provider
-    "parameters": {             # Model-specific parameters
-        "temperature": 0.7,
-        "max_tokens": 150
-    }
-}
-```
+#### `api_version` (str)
+API version to use (required for Azure OpenAI).
+
+#### `azure_endpoint` (str)
+Azure endpoint URL (required for Azure OpenAI).
+
+#### `model_name` (str)
+Name of the model to use. Default: `"gpt-4o"`.
+
+#### `model_temperature` (float)
+Sampling temperature for the model. Default: `0.4`.
+
+#### `model_max_tokens` (int)
+Maximum number of tokens in the response. Default: `4096`.
 
 ---
 
-### Example Configurations
+### Example Configuration
 
-### Basic Configuration for OpenAI
+#### Basic Configuration for OpenAI
 
 ```python
 model_settings = {
-    "provider": "openai",
+    "provider": "chatopenai",
     "api_key": "your_openai_api_key",
-    "parameters": {
-        "temperature": 0.5,
-        "max_tokens": 100
-    }
+    "model_name": "gpt-4o",
+    "model_temperature": 0.4,
+    "model_max_tokens": 4096
+}
+```
+
+#### Configuration for Azure OpenAI
+
+```python
+model_settings = {
+    "provider": "azurechatopenai",
+    "api_key": "your_azure_api_key",
+    "api_version": "2024-02-15-preview",
+    "azure_endpoint": "https://your-resource-name.openai.azure.com/",
+    "model_name": "gpt-4o",
+    "model_temperature": 0.4,
+    "model_max_tokens": 4096
 }
 ```
 

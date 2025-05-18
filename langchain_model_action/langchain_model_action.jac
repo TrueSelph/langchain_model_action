@@ -1,6 +1,6 @@
 import:py logging;
 import:py traceback;
-import:py from typing { Union }
+import:py from typing { Optional, Union }
 import:py from logging { Logger }
 import:py from langchain_core.prompts { ChatPromptTemplate }
 import:py from langchain_openai { ChatOpenAI, AzureChatOpenAI }
@@ -27,68 +27,107 @@ node LangChainModelAction :ModelAction: {
         prompt_messages:list,
         prompt_variables:dict,
         kwargs:dict = {}
-    ) -> dict {
+    ) -> Optional[ModelActionResult] {
 
         llm = None;
 
         if not self.api_key {
-            self.logger.error("LangchainModelAction: API key not set.");
+            self.logger.error("LangChainModelAction: API key not set.");
             return None;
         }
 
-        # we'll need to convert the prompt_messages dict to an array of tuples
+        # Validate prompt_messages
+        if not isinstance(prompt_messages, list) {
+            self.logger.error("LangChainModelAction: prompt_messages must be a list.");
+            return None;
+        }
+        if not prompt_messages {
+            self.logger.error("LangChainModelAction: prompt_messages list is empty.");
+            return None;
+        }
+        for (idx, item) in enumerate(prompt_messages) {
+            if not isinstance(item, dict) {
+                self.logger.error(f"LangChainModelAction: prompt_messages[{idx}] is not a dict.");
+                return None;
+            }
+            if len(item) != 1 {
+                self.logger.error(f"LangChainModelAction: prompt_messages[{idx}] must have exactly one role-message pair.");
+                return None;
+            }
+            (role, message) = next(iter(item.items()));
+            if not isinstance(role, str) or not isinstance(message, str) {
+                self.logger.error(f"LangChainModelAction: prompt_messages[{idx}] role and message must be strings.");
+                return None;
+            }
+            if not role or not message {
+                self.logger.error(f"LangChainModelAction: prompt_messages[{idx}] role or message is empty.");
+                return None;
+            }
+        }
+
+        # Validate prompt_variables
+        if not isinstance(prompt_variables, dict) {
+            self.logger.error("LangChainModelAction: prompt_variables must be a dict.");
+            return None;
+        }
+
+        # Convert prompt_messages to array of tuples
         prompt_tuples = [(role, message) for item in prompt_messages for (role, message) in item.items()];
         template = ChatPromptTemplate.from_messages(prompt_tuples);
 
-        op = kwargs.get('op', self.provider) or "chatopenai";
-        functions = kwargs.get('functions', []);
-        temperature = kwargs.get('model_temperature', self.model_temperature);
-        model_name = kwargs.get('model_name', self.model_name);
-        max_tokens = kwargs.get('model_max_tokens', self.model_max_tokens);
+        op = kwargs.get("op", self.provider) or "chatopenai";
+        functions = kwargs.get("functions", []);
+        temperature = kwargs.get("model_temperature", self.model_temperature);
+        model_name = kwargs.get("model_name", self.model_name);
+        max_tokens = kwargs.get("model_max_tokens", self.model_max_tokens);
+        streaming = kwargs.get("streaming", False);
+        tool_choice = kwargs.get("tool_choice", "any");
 
-        if op == 'chatopenai' {
+        if op == "chatopenai" {
             llm = ChatOpenAI(
                 temperature = temperature,
                 model_name = model_name,
                 openai_api_key = self.api_key,
                 max_tokens = max_tokens
             );
-
-        } elif op == 'azurechatopenai' {
-
+        } elif op == "azurechatopenai" {
             if not self.azure_endpoint {
-                self.logger.error("LangchainModelAction: Azure endpoint not set.");
+                self.logger.error("LangChainModelAction: Azure endpoint not set.");
                 return None;
             }
-
             if not self.api_version {
-                self.logger.error("LangchainModelAction: Azure API version not set.");
+                self.logger.error("LangChainModelAction: Azure API version not set.");
                 return None;
             }
-
             llm = AzureChatOpenAI(
                 temperature = temperature,
-                openai_api_version=self.api_version,
-                openai_api_key=self.api_key,
-                azure_endpoint=self.azure_endpoint,
-                deployment_name=model_name,
+                openai_api_version = self.api_version,
+                openai_api_key = self.api_key,
+                azure_endpoint = self.azure_endpoint,
+                deployment_name = model_name,
                 max_tokens = max_tokens
             );
         }
 
-        if(llm) {
+        if llm {
             try {
-
                 messages = template.format_messages(**prompt_variables);
 
-                if(functions) {
-                    llm = llm.bind_tools(functions);
+                if functions {
+                    llm = llm.bind_tools(functions, tool_choice = tool_choice);
                 }
 
                 with get_openai_callback() as cb {
-
-                    if(message:=llm.invoke(messages)) {
-
+                    if streaming {
+                        return ModelActionResult(
+                            prompt = messages,
+                            tokens = cb.total_tokens,
+                            generator = llm.stream(messages),
+                            temperature = temperature,
+                            model_name = model_name,
+                            max_tokens = max_tokens
+                        );
+                    } elif (message := llm.invoke(messages)) {
                         return ModelActionResult(
                             prompt = messages,
                             functions = functions,
@@ -98,13 +137,10 @@ node LangChainModelAction :ModelAction: {
                             model_name = model_name,
                             max_tokens = max_tokens
                         );
-
                     }
-
                 }
-
             } except Exception as e {
-                self.logger.error(f"an exception occurred, {traceback.format_exc()}");
+                self.logger.error(f"An exception occurred in invoke: {traceback.format_exc()}");
             }
         }
 

@@ -15,3 +15,8 @@
 
 ## 0.0.6
 - Updated Azureopenai implementation
+
+## 0.0.7
+- Added streaming support
+- Added ability to pass 'tool_choice' via kwargs
+- Added param validation

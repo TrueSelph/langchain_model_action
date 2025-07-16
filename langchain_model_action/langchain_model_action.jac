@@ -1,15 +1,16 @@
-import:py logging;
-import:py traceback;
-import:py from typing { Optional, Union }
-import:py from logging { Logger }
-import:py from langchain_core.prompts { ChatPromptTemplate }
-import:py from langchain_openai { ChatOpenAI, AzureChatOpenAI }
-import:py from langchain_community.callbacks { get_openai_callback }
-import:jac from jivas.agent.action.model_action { ModelAction, ModelActionResult }
+import logging;
+import traceback;
+import from typing { Optional, Union }
+import from logging { Logger }
+import from langchain_core.prompts { ChatPromptTemplate }
+import from langchain_openai { ChatOpenAI, AzureChatOpenAI }
+import from langchain_community.callbacks { get_openai_callback }
+import from langchain.schema { get_buffer_string }
+import from jivas.agent.action.model_action { ModelAction, ModelActionResult }
 
-node LangChainModelAction :ModelAction: {
+node LangChainModelAction(ModelAction) {
     # JIVAS action wrapper around LangChain library for abstracted LLM interfacing
-    # you can register multiple instances of this action, each with different api keys and model configurations
+    # you def register multiple instances of this action, each with different api keys and model configurations
     # for use in other actions
 
     # set up logger
@@ -23,10 +24,10 @@ node LangChainModelAction :ModelAction: {
     has model_temperature:float = 0.4;
     has model_max_tokens:int = 4096;
 
-    can invoke(
+    def invoke(
         prompt_messages:list,
         prompt_variables:dict,
-        kwargs:dict = {}
+        **kwargs:dict
     ) -> Optional[ModelActionResult] {
 
         llm = None;
@@ -120,7 +121,7 @@ node LangChainModelAction :ModelAction: {
                 with get_openai_callback() as cb {
                     if streaming {
                         return ModelActionResult(
-                            prompt = messages,
+                            prompt = get_buffer_string(messages),
                             tokens = cb.total_tokens,
                             generator = llm.stream(messages),
                             temperature = temperature,
@@ -129,7 +130,7 @@ node LangChainModelAction :ModelAction: {
                         );
                     } elif (message := llm.invoke(messages)) {
                         return ModelActionResult(
-                            prompt = messages,
+                            prompt = get_buffer_string(messages),
                             functions = functions,
                             tokens = cb.total_tokens,
                             result = message.tool_calls if functions else message.content,
@@ -147,7 +148,7 @@ node LangChainModelAction :ModelAction: {
         return None;
     }
 
-    can healthcheck() -> Union[bool, dict] {
+    def healthcheck() -> Union[bool, dict] {
 
         if not self.api_key {
             return {
@@ -158,14 +159,15 @@ node LangChainModelAction :ModelAction: {
         }
 
         test_prompt_messages = [{"system" : "Output the result of 2 + 2"}];
-        test_kwargs = {
-            "model_name": self.model_name,
-            "model_temperature": self.model_temperature,
-            "model_max_tokens": self.model_max_tokens
-        };
 
         try {
-            if( model_action_result := self.call_model(prompt_messages = test_prompt_messages, prompt_variables = {}, kwargs = test_kwargs)) {               # set the interaction message+
+            if( model_action_result := self.call_model(
+                    prompt_messages = test_prompt_messages, 
+                    prompt_variables = {}, 
+                    model_name=self.model_name,
+                    model_temperature=self.model_temperature,
+                    model_max_tokens=self.model_max_tokens
+                )) {               # set the interaction message+
                 interaction_message = model_action_result.get_result();
                 if not interaction_message {
                     return {

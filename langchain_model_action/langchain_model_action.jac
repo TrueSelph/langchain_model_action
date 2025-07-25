@@ -162,8 +162,8 @@ node LangChainModelAction(ModelAction) {
 
         try {
             if( model_action_result := self.call_model(
-                    prompt_messages = test_prompt_messages, 
-                    prompt_variables = {}, 
+                    prompt_messages = test_prompt_messages,
+                    prompt_variables = {},
                     model_name=self.model_name,
                     model_temperature=self.model_temperature,
                     model_max_tokens=self.model_max_tokens

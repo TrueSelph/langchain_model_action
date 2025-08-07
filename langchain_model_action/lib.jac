@@ -1,1 +1,3 @@
-include:jac langchain_model_action;
+import from actions.jivas.langchain_model_action {
+    langchain_model_action
+}

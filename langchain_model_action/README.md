@@ -6,7 +6,7 @@
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/TrueSelph/langchain_model_action)
 ![GitHub](https://img.shields.io/github/license/TrueSelph/langchain_model_action)
 
-This action provides a JIVAS action wrapper for the LangChain library to invoke LLM calls, facilitating abstracted interfacing with large language models (LLMs). As a core action, it simplifies and streamlines interactions with LLMs. The package is a singleton and requires the Jivas library version 2.0.0. It also depends on various Python packages for its functionality, including `openai` and different components of the LangChain ecosystem.
+This action provides a JIVAS action wrapper for the LangChain library to invoke LLM calls, facilitating abstracted interfacing with large language models (LLMs). As a core action, it simplifies and streamlines interactions with LLMs. The package is a singleton and requires the Jivas library version 2.1.0. It also depends on various Python packages for its functionality, including `openai` and different components of the LangChain ecosystem.
 
 Additionally, this action supports streaming responses when the `streaming` flag is set in the interact configuration, enabling real-time output from the underlying LLM.
 
@@ -14,7 +14,7 @@ Additionally, this action supports streaming responses when the `streaming` flag
 
 - **Name:** `jivas/langchain_model_action`
 - **Author:** [V75 Inc.](https://v75inc.com/)
-- **Architype:** `LangChainModelAction`
+- **archetype:** `LangChainModelAction`
 
 ## Meta Information
 
@@ -28,7 +28,7 @@ Additionally, this action supports streaming responses when the `streaming` flag
 
 ## Dependencies
 
-- **Jivas:** `^2.0.0-alpha.43`
+- **Jivas:** `^2.1.0`
 - **Pip:**
   - `openai`: `>=1.68.2`
   - `langchain`: `>=0.3.21`

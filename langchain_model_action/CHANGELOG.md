@@ -20,3 +20,6 @@
 - Added streaming support
 - Added ability to pass 'tool_choice' via kwargs
 - Added param validation
+
+## 0.1.0
+- Updated to support Jivas 2.1.0

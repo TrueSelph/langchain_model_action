@@ -31,7 +31,11 @@ node LangChainModelAction(ModelAction) {
         **kwargs:dict
     ) -> Optional[ModelActionResult] {
         interaction_node = kwargs.get("interaction_node");
-        frame_node = interaction_node.get_frame();
+        session_id = "unknown";
+        if interaction_node {
+            frame_node = interaction_node.get_frame();
+            session_id = frame_node.session_id;
+        }
 
         llm = None;
 
@@ -134,7 +138,7 @@ node LangChainModelAction(ModelAction) {
                             event_msg = {
                                	 			"id": interaction_node.id,
                             				"content": chunk.content,
-                                			"session_id": frame_node.session_id,
+                                			"session_id": session_id,
                                             "type": chunk.type,
                                             "metadata": chunk.response_metadata,
                                         };

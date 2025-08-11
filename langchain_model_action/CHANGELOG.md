@@ -26,3 +26,9 @@
 
 ## 0.1.1
 - Fix interaction_node, None type error
+
+## 0.1.2
+- bump version
+
+## 0.1.3
+- Fix test_invoke bug

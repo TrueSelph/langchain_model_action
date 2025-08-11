@@ -290,7 +290,7 @@ node LangChainModelAction(ModelAction) {
                         );
                     } elif (message := llm.invoke(messages)) {
                         return ModelActionResult(
-                            prompt = get_buffer_string(messages),
+                            prompt = messages,
                             functions = functions,
                             tokens = cb.total_tokens,
                             result = message.tool_calls if functions else message.content,

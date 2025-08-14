@@ -150,6 +150,7 @@ node LangChainModelAction(ModelAction) {
                             prompt = get_buffer_string(messages),
                             tokens = total_tokens,
                             temperature = temperature,
+                            result = full_text,
                             model_name = model_name,
                             max_tokens = max_tokens
                         );

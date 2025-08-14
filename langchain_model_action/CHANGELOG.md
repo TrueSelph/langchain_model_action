@@ -32,3 +32,6 @@
 
 ## 0.1.3
 - Fix test_invoke bug
+
+## 0.1.4
+- Fix streaming bug

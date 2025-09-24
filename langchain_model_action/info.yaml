@@ -2,7 +2,7 @@ package:
   name: jivas/langchain_model_action
   author: V75 Inc.
   archetype: LangChainModelAction
-  version: 0.1.4
+  version: 0.1.5
   meta:
     title: LangChain Model Action
     description: JIVAS action wrapper around LangChain library for abstracted LLM interfacing.

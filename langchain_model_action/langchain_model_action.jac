@@ -17,10 +17,10 @@ node LangChainModelAction(ModelAction) {
     # set up logger
     static has logger:Logger = logging.getLogger(__name__);
 
-    has provider:str = "chatopenai"; # azurechatopenai
+    has provider:str = "chatopenai"; # azurechatopenai, openrouter
     has api_key:str = "";
     has api_version: str = "";
-    has azure_endpoint: str = "";
+    has endpoint: str = "";
     has model_name:str = "gpt-4o";
     has model_temperature:float = 0.4;
     has model_max_tokens:int = 4096;
@@ -91,15 +91,16 @@ node LangChainModelAction(ModelAction) {
         streaming = kwargs.get("streaming", False);
         tool_choice = kwargs.get("tool_choice", "any");
 
-        if op == "chatopenai" {
+        if op in ["chatopenai", "openrouter"] {
             llm = ChatOpenAI(
                 temperature = temperature,
                 model_name = model_name,
                 openai_api_key = self.api_key,
+                openai_api_base = self.endpoint,
                 max_tokens = max_tokens
             );
         } elif op == "azurechatopenai" {
-            if not self.azure_endpoint {
+            if not self.endpoint {
                 self.logger.error("LangChainModelAction: Azure endpoint not set.");
                 return None;
             }
@@ -111,7 +112,7 @@ node LangChainModelAction(ModelAction) {
                 temperature = temperature,
                 openai_api_version = self.api_version,
                 openai_api_key = self.api_key,
-                azure_endpoint = self.azure_endpoint,
+                azure_endpoint = self.endpoint,
                 deployment_name = model_name,
                 max_tokens = max_tokens
             );
@@ -241,15 +242,16 @@ node LangChainModelAction(ModelAction) {
         tool_choice = kwargs.get("tool_choice", "any");
         # llm_prompt_message = kwargs.get("llm_prompt_message", "");
 
-        if op == "chatopenai" {
+        if op in ["chatopenai", "openrouter"] {
             llm = ChatOpenAI(
                 temperature = temperature,
                 model_name = model_name,
                 openai_api_key = self.api_key,
+                openai_api_base = self.endpoint,
                 max_tokens = max_tokens
             );
         } elif op == "azurechatopenai" {
-            if not self.azure_endpoint {
+            if not self.endpoint {
                 self.logger.error("LangChainModelAction: Azure endpoint not set.");
                 return None;
             }
@@ -261,7 +263,7 @@ node LangChainModelAction(ModelAction) {
                 temperature = temperature,
                 openai_api_version = self.api_version,
                 openai_api_key = self.api_key,
-                azure_endpoint = self.azure_endpoint,
+                azure_endpoint = self.endpoint,
                 deployment_name = model_name,
                 max_tokens = max_tokens
             );

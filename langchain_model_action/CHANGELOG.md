@@ -38,3 +38,6 @@
 
 ## 0.1.5
 - Updated action to support openrouter
+
+## 0.1.6
+- Remove model call from healthcheck

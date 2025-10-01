@@ -320,41 +320,6 @@ node LangChainModelAction(ModelAction) {
                 "severity": "error"
             };
         }
-
-        test_prompt_messages = [{"system" : "Output the result of 2 + 2"}];
-
-        try {
-            if( model_action_result := self.call_model(
-                    prompt_messages = test_prompt_messages,
-                    prompt_variables = {},
-                    model_name=self.model_name,
-                    model_temperature=self.model_temperature,
-                    model_max_tokens=self.model_max_tokens
-                )) {               # set the interaction message+
-                interaction_message = model_action_result.get_result();
-                if not interaction_message {
-                    return {
-                        "status": False,
-                        "message": "No valid result from LLM call. Check API key and model configuration.",
-                        "severity": "error"
-                    };
-                } else {
-                    return True;
-                }
-            }
-            return {
-                "status": False,
-                "message": "Unable to excute LLM call. Check API key and model configuration.",
-                "severity": "error"
-            };
-        } except Exception as e {
-            self.logger.error(f"An exception occurred in {self.label}:\n{traceback.format_exc()}\n");
-            return {
-                "status": False,
-                "message": f"There is an issue with the action. {e}",
-                "severity": "error"
-            };
-        }
     }
 
 }

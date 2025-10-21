@@ -44,3 +44,6 @@
 
 ## 0.1.7
 - Lock action packages
+
+## 0.1.8
+- Update langchain-core to 0.3.79

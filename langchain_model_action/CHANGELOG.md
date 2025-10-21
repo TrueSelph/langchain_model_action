@@ -47,3 +47,6 @@
 
 ## 0.1.8
 - Update langchain-core to 0.3.79
+
+## 0.1.9
+- Update action and packages

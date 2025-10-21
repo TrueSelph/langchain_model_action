@@ -41,3 +41,6 @@
 
 ## 0.1.6
 - Remove model call from healthcheck
+
+## 0.1.7
+- Lock action packages

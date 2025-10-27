@@ -5,7 +5,7 @@ import from logging { Logger }
 import from langchain_core.prompts { ChatPromptTemplate }
 import from langchain_openai { ChatOpenAI, AzureChatOpenAI }
 import from langchain_community.callbacks { get_openai_callback }
-import from langchain_classic.schema { get_buffer_string }
+import from langchain_core.messages { get_buffer_string }
 import from jivas.agent.action.model_action { ModelAction, ModelActionResult }
 import from jac_cloud.plugin { WEBSOCKET_MANAGER as socket }
 

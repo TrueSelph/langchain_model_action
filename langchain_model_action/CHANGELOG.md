@@ -50,3 +50,6 @@
 
 ## 0.1.9
 - Update action and packages
+
+## 0.1.10
+- Update dependencies
